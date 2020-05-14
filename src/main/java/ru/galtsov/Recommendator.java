@@ -1,8 +1,5 @@
-package com.epam;
+package ru.galtsov;
 
-/**
- * @author Evgeny Borisov
- */
 public interface Recommendator {
     void recommend();
 }

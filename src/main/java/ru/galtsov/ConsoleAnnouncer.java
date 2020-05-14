@@ -1,8 +1,6 @@
-package com.epam;
+package ru.galtsov;
 
-/**
- * @author Evgeny Borisov
- */
+@Singleton
 public class ConsoleAnnouncer implements Announcer {
     @InjectByType
     private Recommendator recommendator;

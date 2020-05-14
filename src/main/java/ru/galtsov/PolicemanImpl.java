@@ -1,10 +1,8 @@
-package com.epam;
+package ru.galtsov;
 
 import javax.annotation.PostConstruct;
 
-/**
- * @author Evgeny Borisov
- */
+@Singleton
 public class PolicemanImpl implements Policeman {
 
     @InjectByType

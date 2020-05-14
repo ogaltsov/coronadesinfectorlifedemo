@@ -1,14 +1,14 @@
-package com.epam;
+package ru.galtsov;
 
 /**
  * @author Evgeny Borisov
  */
-
+@Singleton
 public class CoronaDesinfector {
 
     @InjectByType
     private Announcer announcer;
-    @InjectByType
+    @InjectByType(componentName = "angryPoliceman")
     private Policeman policeman;
 
 

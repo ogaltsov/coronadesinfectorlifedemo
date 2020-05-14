@@ -1,11 +1,10 @@
-package com.epam;
+package ru.galtsov;
 
-/**
- * @author Evgeny Borisov
- */
+
 @Singleton
 public class RecommendatorImpl implements Recommendator {
-    @InjectProperty("wisky")
+
+    @InjectProperty(name = "wisky")
     private String alcohol;
 
     public RecommendatorImpl() {

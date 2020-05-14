@@ -1,4 +1,4 @@
-package com.epam;
+package ru.galtsov;
 
 /**
  * @author Evgeny Borisov

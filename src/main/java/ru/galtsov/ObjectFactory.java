@@ -1,37 +1,33 @@
-package com.epam;
+package ru.galtsov;
 
 import lombok.Setter;
 import lombok.SneakyThrows;
+import org.reflections.Reflections;
 
 import javax.annotation.PostConstruct;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.lang.reflect.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
 
-/**
- * @author Evgeny Borisov
- */
 public class ObjectFactory {
-    private final ApplicationContext context;
+    @Setter
+    private ApplicationContext context;
     private List<ObjectConfigurator> configurators = new ArrayList<>();
     private List<ProxyConfigurator> proxyConfigurators = new ArrayList<>();
 
 
 
     @SneakyThrows
-    public ObjectFactory(ApplicationContext context) {
-        this.context= context;
-        for (Class<? extends ObjectConfigurator> aClass : context.getConfig().getScanner().getSubTypesOf(ObjectConfigurator.class)) {
+    public ObjectFactory(ApplicationContext context, Reflections componentScanner) {
+
+        this.context = context;
+
+        for (Class<? extends ObjectConfigurator> aClass : componentScanner.getSubTypesOf(ObjectConfigurator.class)) {
             configurators.add(aClass.getDeclaredConstructor().newInstance());
         }
-        for (Class<? extends ProxyConfigurator> aClass : context.getConfig().getScanner().getSubTypesOf(ProxyConfigurator.class)) {
+        for (Class<? extends ProxyConfigurator> aClass : componentScanner.getSubTypesOf(ProxyConfigurator.class)) {
             proxyConfigurators.add(aClass.getDeclaredConstructor().newInstance());
         }
     }
