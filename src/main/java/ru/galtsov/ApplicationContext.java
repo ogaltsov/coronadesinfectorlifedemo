@@ -6,8 +6,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -55,19 +57,17 @@ public class ApplicationContext {
 			componentDraftNameMap.put(draft.getName(), draft);
 		});
 
-		//проверяем что все необходимые компоненты существуют(раньше всего)
-
-		//проверяем циклические зависимости
-
-		//расставляем порядки(уровень вложенности) и создаем
 		buildComponentTree(draftList);
-
 	}
 
 	private void buildComponentTree(List<ComponentDraft> draftList) {
 
 		List<ComponentDependencyTreeNode> dependencyNodeList = new ArrayList<>();
-		draftList.forEach(draft -> buildNode(draft, 0, dependencyNodeList));
+
+		draftList.forEach(draft -> {
+			Set<ComponentDraft> treeTraceHistory = new HashSet<>();
+			buildNode(draft, 0, dependencyNodeList, treeTraceHistory);
+		});
 
 		Map<ComponentDraft, ComponentDependencyTreeNode> collect = dependencyNodeList.stream()
 				.collect(Collectors.toMap(
@@ -90,7 +90,13 @@ public class ApplicationContext {
 		});
 	}
 
-	private ComponentDependencyTreeNode buildNode(ComponentDraft parentComponentDraft, int level, List<ComponentDependencyTreeNode> nodeResultList) {
+	private ComponentDependencyTreeNode buildNode(ComponentDraft parentComponentDraft, int level, List<ComponentDependencyTreeNode> nodeResultList, Set<ComponentDraft> treeTraceHistory) {
+
+		if (treeTraceHistory.contains(parentComponentDraft)) {
+			throw new IllegalStateException("cyclic dependency for: " + parentComponentDraft.getType());
+		}
+		treeTraceHistory.add(parentComponentDraft);
+
 		ComponentDependencyTreeNode treeNode = new ComponentDependencyTreeNode();
 		treeNode.setParentComponent(parentComponentDraft);
 		treeNode.setLevel(level++);
@@ -98,7 +104,7 @@ public class ApplicationContext {
 		int finalLevel = level;
 		List<ComponentDependencyTreeNode> childComponentNodes = parentComponentDraft.getDependentComponents().stream()
 				.map(this::getSuitableComponentDraft)
-				.map(draft -> buildNode(draft, finalLevel, nodeResultList))
+				.map(draft -> buildNode(draft, finalLevel, nodeResultList, treeTraceHistory))
 				.collect(Collectors.toList());
 
 		treeNode.setChildComponentNodes(childComponentNodes);

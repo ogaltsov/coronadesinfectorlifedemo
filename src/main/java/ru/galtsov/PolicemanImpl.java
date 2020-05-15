@@ -2,7 +2,7 @@ package ru.galtsov;
 
 import javax.annotation.PostConstruct;
 
-@Singleton
+@Singleton(componentName = "simplePoliceman")
 public class PolicemanImpl implements Policeman {
 
     @InjectByType
